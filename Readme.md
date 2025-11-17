@@ -38,15 +38,53 @@ This integration enables external systems to:
 ### Integration Architecture
 
 ```
-┌─────────────────┐         ┌─────────────────┐         ┌─────────────────┐
-│  Payer/HMIS    │────────▶│   VEMS API      │────────▶│  Cost Engine    │
-│   System        │         │   Gateway       │         │  & Database     │
-└─────────────────┘         └─────────────────┘         └─────────────────┘
-        │                            │                            │
-        │                            │                            │
-        └────────────────────────────┴────────────────────────────┘
-                        Response with Cost Distribution
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                     Health Information Exchange (HIE)                         │
+│                   • Facility Registry (FR Codes)                             │
+│                   • Client Registry (CR Numbers)                             │
+│                   • Master Facility & Service Data                           │
+└────────────────────────────────────┬─────────────────────────────────────────┘
+                                     │
+                    ┌────────────────┼────────────────┐
+                    │                │                │
+                    ▼                ▼                ▼
+         ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+         │      HMIS       │  │Provider Portal  │  │  Payer System   │
+         │   (Hospital)    │  │  (Facility)     │  │     (SHA)       │
+         └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
+                  │                    │                    │
+                  └────────────────────┼────────────────────┘
+                                       │
+                                       ▼
+                            ┌─────────────────────┐
+                            │     VEMS API        │
+                            │  • Cost Calculator  │
+                            │  • Booking Engine   │
+                            │  • Status Polling   │
+                            └──────────┬──────────┘
+                                       │
+                    ┌──────────────────┼──────────────────┐
+                    ▼                  ▼                  ▼
+         ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
+         │     Vendor      │  │    Facility     │  │   VEMS Admin    │
+         │   Settlement    │  │   Settlement    │  │    Dashboard    │
+         └─────────────────┘  └─────────────────┘  └─────────────────┘
 ```
+
+### Integration Workflow Overview
+
+The VEMS integration follows a bidirectional communication pattern that enables real-time cost distribution and claim status synchronization across healthcare systems:
+
+#### **Phase 1: Discovery & Service Query**
+External systems (HMIS, Provider Portals, Payer Systems) query the Health Information Exchange (HIE) to discover VEMS-enabled facilities and their contracted services. This ensures that only eligible facilities and services are presented to users during the booking process.
+
+#### **Phase 2: Booking & Cost Distribution Request**
+When a patient requires a VEMS-managed service, the external system submits a booking request to VEMS with patient, facility, and service details. VEMS immediately calculates and returns the cost distribution breakdown (Vendor Share, Facility Share, Service Fee), enabling transparent cost visibility before claim submission.
+
+#### **Phase 3: Claim Status Polling & Real-Time Updates**
+After the payer processes the claim, VEMS actively polls the payer system to retrieve claim status updates (approved, rejected, partially paid). This bidirectional synchronization ensures VEMS maintains accurate, real-time booking and payment status, enabling automated vendor and facility settlements.
+
+This architecture eliminates manual reconciliation, reduces payment delays, and provides end-to-end visibility across all stakeholders in the healthcare payment ecosystem.
 
 ### Key Concepts
 
