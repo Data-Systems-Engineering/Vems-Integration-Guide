@@ -37,54 +37,21 @@ This integration enables external systems to:
 
 ### Integration Architecture
 
-```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                     Health Information Exchange (HIE)                         │
-│                   • Facility Registry (FR Codes)                             │
-│                   • Client Registry (CR Numbers)                             │
-│                   • Master Facility & Service Data                           │
-└────────────────────────────────────┬─────────────────────────────────────────┘
-                                     │
-                    ┌────────────────┼────────────────┐
-                    │                │                │
-                    ▼                ▼                ▼
-         ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-         │      HMIS       │  │Provider Portal  │  │  Payer System   │
-         │   (Hospital)    │  │  (Facility)     │  │     (SHA)       │
-         └────────┬────────┘  └────────┬────────┘  └────────┬────────┘
-                  │                    │                    │
-                  └────────────────────┼────────────────────┘
-                                       │
-                                       ▼
-                            ┌─────────────────────┐
-                            │     VEMS API        │
-                            │  • Cost Calculator  │
-                            │  • Booking Engine   │
-                            │  • Status Polling   │
-                            └──────────┬──────────┘
-                                       │
-                    ┌──────────────────┼──────────────────┐
-                    ▼                  ▼                  ▼
-         ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐
-         │     Vendor      │  │    Facility     │  │   VEMS Admin    │
-         │   Settlement    │  │   Settlement    │  │    Dashboard    │
-         └─────────────────┘  └─────────────────┘  └─────────────────┘
-```
+The VEMS integration follows a bidirectional communication pattern that enables real-time cost distribution and claim status synchronization across healthcare systems. External systems (HMIS, Provider Portals, Payer Systems) interact with VEMS through the Health Information Exchange (HIE) for facility and patient data, then directly with VEMS API for service queries, bookings, and cost distribution.
 
-### Integration Workflow Overview
+VEMS actively polls payer systems to retrieve claim status updates, ensuring real-time synchronization and enabling automated settlements for vendors and facilities upon claim approval.
 
-The VEMS integration follows a bidirectional communication pattern that enables real-time cost distribution and claim status synchronization across healthcare systems:
+**For detailed workflow diagrams, step-by-step processes, and integration benefits, see the [Integration Workflow Document](WORKFLOW.md).**
 
-#### **Phase 1: Discovery & Service Query**
-External systems (HMIS, Provider Portals, Payer Systems) query the Health Information Exchange (HIE) to discover VEMS-enabled facilities and their contracted services. This ensures that only eligible facilities and services are presented to users during the booking process.
+### Integration Phases Summary
 
-#### **Phase 2: Booking & Cost Distribution Request**
-When a patient requires a VEMS-managed service, the external system submits a booking request to VEMS with patient, facility, and service details. VEMS immediately calculates and returns the cost distribution breakdown (Vendor Share, Facility Share, Service Fee), enabling transparent cost visibility before claim submission.
+1. **Discovery & Service Query**: Query HIE for VEMS-enabled facilities, then query VEMS for available services and cost breakdowns
+2. **Booking & Cost Distribution**: Submit patient service requests to VEMS and receive real-time cost distribution
+3. **Claim Submission**: Submit claims to payer with VEMS booking reference
+4. **Status Polling**: VEMS automatically polls payer systems for claim status updates
+5. **Automated Settlement**: VEMS triggers vendor and facility payments upon claim approval
 
-#### **Phase 3: Claim Status Polling & Real-Time Updates**
-After the payer processes the claim, VEMS actively polls the payer system to retrieve claim status updates (approved, rejected, partially paid). This bidirectional synchronization ensures VEMS maintains accurate, real-time booking and payment status, enabling automated vendor and facility settlements.
-
-This architecture eliminates manual reconciliation, reduces payment delays, and provides end-to-end visibility across all stakeholders in the healthcare payment ecosystem.
+---
 
 ### Key Concepts
 
