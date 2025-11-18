@@ -669,4 +669,4 @@ print(f"Total Amount: KES {result['totalAmount']}")
 
 **End of Document**
 
-For questions or clarifications, please contact: emekubo@datasystems.co.ke | manzolo@datasystems.co.ke | chepkwony@datasystems.co.ke | cc: woki@datasystems.co.ke
+For questions or clarifications, please contact: emekubo@datasystems.co.ke | manzolo@datasystems.co.ke | chepkwony@datasystems.co.ke | cc: woki@datasystems.co.ke | rmutai@datasystems.co.ke | immaculate@datasystems.co.ke
